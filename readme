@@ -1,0 +1,62 @@
+PlantPopGenFIT
+
+A package that performs Plant Population Genetic simulations, Forward In Time. 
+
+Plants live in one or more populations, which have prescribed maximum sizes (carrying capacities). Each time step (nominally, one year), plants are removed from populations according to (age-specific) mortality rates. These plants are replaced by recruits, up to the carrying capacity of the population. Each recruit is made by choosing a mother plant and a father plant. These parent plants are chosen at random, but with weights that reflect the reproductive intensities (R) of different plants, dispersal between populations, and the magnitude of a selfing parameter. In turn, reproductive intensity can be influenced by age, and phenotypes. That is, plants are given greater reproductive intensities if their phenotype is nearer a nominated optimum value for their population. The phenotype value of each plant is determined by its genotypes, with prescribed locus and dominance effects. 
+
+
+* Simulation, demography, and genetics
+
+tsteps		An integer describing how many steps to advance the simulator
+
+mortality	A vector, describing the rate of mortality for individuals in different age classes. The value of the last element in the vector is applied to all subsequent age classes. 
+		For example, for an annual, where all individuals die at the end of the same year in which they germinated, use c(1).
+		For a perennial that rarely lives beyond 10 years, for example c(0.1,0,0,0,0,0,0.2,0.4,0.6,0.9) 
+
+demo 		Supplies the starting demographic table. 
+		It consists of a matrix with 2 columns, and the number of rows equal to the total number of individuals in the simulation. 
+		The first column is the population each individual belongs to, and the second column is the age. 
+		For example, demo = cbind(rep(0,100),rep(0,100)); demo[51:100,1] = 1
+
+gt		The starting genotype matrix	
+		For example, randomize it: gt = matrix( floor(runif(10000,0,3)), nrow=100  )
+		Or, start with all alleles set to 0, and introduce alternate alleles with mutation, to arrive at equilibrium
+
+K		A vector containing carrying capacities for the various populations. 
+		For example, K = c(nrow(demo)); K = c(50,50)
+
+dispersal	Dispersal is a matrix describing the relative probability that a member of one population will be a parent of another. 
+		dispersal = matrix(c(1,0.05,0.05,1),nrow=2)
+
+
+selfing		Controls the level of selfing. Pollen competes for seed, and the value of selfing modulates the competitiveness of a plant in competeting for its own seed. 
+		That is, setting selfing=0 stops selfing entirely. 
+		Setting selfing=1 means the pollen from the same plant has no advantage or disadvantage in competing to fertilise seed on the same plant.   
+
+
+* Phenotypes and fitness
+
+A phenotype is produced. It is the outcome of the modeled loci. 
+If genotype is 0, add 0 to phenotype
+If genotype is 1, add dominance_effect * locus_effect to phenotype
+If genotype is 2, add locus_effect to phenotype
+
+So, if dominance_effect = 0.5, the locus is codominant. For instance, if we want the phenotype values centred on 0, we might use locus_effect = runif(100,-1,1).
+If all loci are co-dominant, dominance_effect = rep(0.5,100)
+
+locus_effect		A vector (equal in length to the number of loci) providing the magnitude of the effect of the locus on the phenotype
+
+dominance effect	A vector (equal in length to the number of loci) providing the dominance effect of the locus
+
+phenotype_opt		
+
+Fitness can be modulated by phenotype values. Currently, this only operates through effects on reproductive intensity. 
+Three parameters are supplied.
+An optimal phenotype value provided for each population. 
+phenotype_opt = c(-1,1)
+Two parameters describe the decline in fitness as a function of the difference between phenotype and phenotype_opt
+for example, n_p = 4; n_k = 0.2
+
+
+
+

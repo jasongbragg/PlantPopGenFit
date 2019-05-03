@@ -1,0 +1,11 @@
+Package: PlantPopGenFIT
+Type: Package
+Title: Plant Population Genetic Forward In Time Simulations
+Version: 0.0.1
+Date: 2018-01-29
+Author: Jason Bragg
+Maintainer: Jason Bragg <jasongbragg@gmail.com>
+Description: Simulates plant evoltion, tracking individuals, genes, and phenotypes.
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.12.15)
+LinkingTo: Rcpp
