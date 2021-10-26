@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // simulation
-List simulation(int tsteps, NumericVector mortality, IntegerMatrix demo, IntegerMatrix gt, IntegerVector K, NumericMatrix dispersal, double selfing, NumericVector locus_effect, NumericVector dominance_effect, NumericVector phenotype_opt, double n_p, double n_k, double mutation);
-RcppExport SEXP _PlantPopGenFIT_simulation(SEXP tstepsSEXP, SEXP mortalitySEXP, SEXP demoSEXP, SEXP gtSEXP, SEXP KSEXP, SEXP dispersalSEXP, SEXP selfingSEXP, SEXP locus_effectSEXP, SEXP dominance_effectSEXP, SEXP phenotype_optSEXP, SEXP n_pSEXP, SEXP n_kSEXP, SEXP mutationSEXP) {
+List simulation(int tsteps, NumericVector mortality, IntegerMatrix demo, IntegerMatrix gt, IntegerVector K, NumericMatrix seed_dispersal, NumericMatrix pollen_dispersal, double selfing, NumericVector locus_effect, NumericVector dominance_effect, NumericVector phenotype_opt, double n_p, double n_k, double mutation);
+RcppExport SEXP _PlantPopGenFIT_simulation(SEXP tstepsSEXP, SEXP mortalitySEXP, SEXP demoSEXP, SEXP gtSEXP, SEXP KSEXP, SEXP seed_dispersalSEXP, SEXP pollen_dispersalSEXP, SEXP selfingSEXP, SEXP locus_effectSEXP, SEXP dominance_effectSEXP, SEXP phenotype_optSEXP, SEXP n_pSEXP, SEXP n_kSEXP, SEXP mutationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -16,7 +16,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type K(KSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type dispersal(dispersalSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type seed_dispersal(seed_dispersalSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type pollen_dispersal(pollen_dispersalSEXP);
     Rcpp::traits::input_parameter< double >::type selfing(selfingSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type locus_effect(locus_effectSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type dominance_effect(dominance_effectSEXP);
@@ -24,24 +25,211 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type n_p(n_pSEXP);
     Rcpp::traits::input_parameter< double >::type n_k(n_kSEXP);
     Rcpp::traits::input_parameter< double >::type mutation(mutationSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulation(tsteps, mortality, demo, gt, K, dispersal, selfing, locus_effect, dominance_effect, phenotype_opt, n_p, n_k, mutation));
+    rcpp_result_gen = Rcpp::wrap(simulation(tsteps, mortality, demo, gt, K, seed_dispersal, pollen_dispersal, selfing, locus_effect, dominance_effect, phenotype_opt, n_p, n_k, mutation));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP _PlantPopGenFIT_rcpp_hello_world() {
+// assign_reproductive_intensity_random
+NumericVector assign_reproductive_intensity_random(int num_ind, double mean, double sigma);
+RcppExport SEXP _PlantPopGenFIT_assign_reproductive_intensity_random(SEXP num_indSEXP, SEXP meanSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
+    Rcpp::traits::input_parameter< int >::type num_ind(num_indSEXP);
+    Rcpp::traits::input_parameter< double >::type mean(meanSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_reproductive_intensity_random(num_ind, mean, sigma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_death_randomly_by_age_class
+IntegerVector assign_death_randomly_by_age_class(NumericVector mortality, IntegerMatrix demo);
+RcppExport SEXP _PlantPopGenFIT_assign_death_randomly_by_age_class(SEXP mortalitySEXP, SEXP demoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type mortality(mortalitySEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_death_randomly_by_age_class(mortality, demo));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sample_with_replacement_based_on_relative_weights
+int sample_with_replacement_based_on_relative_weights(NumericVector weights);
+RcppExport SEXP _PlantPopGenFIT_sample_with_replacement_based_on_relative_weights(SEXP weightsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_with_replacement_based_on_relative_weights(weights));
+    return rcpp_result_gen;
+END_RCPP
+}
+// recruit_to_carrying_capacity
+IntegerMatrix recruit_to_carrying_capacity(IntegerMatrix demo, IntegerVector mortality_individuals, IntegerVector K);
+RcppExport SEXP _PlantPopGenFIT_recruit_to_carrying_capacity(SEXP demoSEXP, SEXP mortality_individualsSEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mortality_individuals(mortality_individualsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(recruit_to_carrying_capacity(demo, mortality_individuals, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_mothers_of_recruits
+IntegerVector assign_mothers_of_recruits(IntegerMatrix demo, IntegerMatrix recruit_demo, NumericVector reproductive_intensity, NumericMatrix dispersal);
+RcppExport SEXP _PlantPopGenFIT_assign_mothers_of_recruits(SEXP demoSEXP, SEXP recruit_demoSEXP, SEXP reproductive_intensitySEXP, SEXP dispersalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type recruit_demo(recruit_demoSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type reproductive_intensity(reproductive_intensitySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type dispersal(dispersalSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_mothers_of_recruits(demo, recruit_demo, reproductive_intensity, dispersal));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_fathers_of_recruits
+IntegerVector assign_fathers_of_recruits(IntegerMatrix demo, IntegerMatrix recruit_demo, NumericVector reproductive_intensity, NumericMatrix dispersal, IntegerVector mother_index, double selfing);
+RcppExport SEXP _PlantPopGenFIT_assign_fathers_of_recruits(SEXP demoSEXP, SEXP recruit_demoSEXP, SEXP reproductive_intensitySEXP, SEXP dispersalSEXP, SEXP mother_indexSEXP, SEXP selfingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type recruit_demo(recruit_demoSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type reproductive_intensity(reproductive_intensitySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type dispersal(dispersalSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mother_index(mother_indexSEXP);
+    Rcpp::traits::input_parameter< double >::type selfing(selfingSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_fathers_of_recruits(demo, recruit_demo, reproductive_intensity, dispersal, mother_index, selfing));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_alleles_to_recruits
+IntegerMatrix assign_alleles_to_recruits(IntegerMatrix gt, IntegerVector mother_index, IntegerVector father_index);
+RcppExport SEXP _PlantPopGenFIT_assign_alleles_to_recruits(SEXP gtSEXP, SEXP mother_indexSEXP, SEXP father_indexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mother_index(mother_indexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type father_index(father_indexSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_alleles_to_recruits(gt, mother_index, father_index));
+    return rcpp_result_gen;
+END_RCPP
+}
+// row_bind_integer_matrices
+IntegerMatrix row_bind_integer_matrices(IntegerMatrix a, IntegerMatrix b);
+RcppExport SEXP _PlantPopGenFIT_row_bind_integer_matrices(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type a(aSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(row_bind_integer_matrices(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// update_demo
+IntegerMatrix update_demo(IntegerMatrix demo, IntegerVector mortality_individuals, IntegerMatrix recruit_demo);
+RcppExport SEXP _PlantPopGenFIT_update_demo(SEXP demoSEXP, SEXP mortality_individualsSEXP, SEXP recruit_demoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mortality_individuals(mortality_individualsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type recruit_demo(recruit_demoSEXP);
+    rcpp_result_gen = Rcpp::wrap(update_demo(demo, mortality_individuals, recruit_demo));
+    return rcpp_result_gen;
+END_RCPP
+}
+// update_gt
+IntegerMatrix update_gt(IntegerMatrix gt, IntegerVector mortality_individuals, IntegerMatrix recruit_gt);
+RcppExport SEXP _PlantPopGenFIT_update_gt(SEXP gtSEXP, SEXP mortality_individualsSEXP, SEXP recruit_gtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mortality_individuals(mortality_individualsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type recruit_gt(recruit_gtSEXP);
+    rcpp_result_gen = Rcpp::wrap(update_gt(gt, mortality_individuals, recruit_gt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_phenotype_quantitative
+NumericVector assign_phenotype_quantitative(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect);
+RcppExport SEXP _PlantPopGenFIT_assign_phenotype_quantitative(SEXP gtSEXP, SEXP locus_effectSEXP, SEXP dominance_effectSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locus_effect(locus_effectSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dominance_effect(dominance_effectSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_phenotype_quantitative(gt, locus_effect, dominance_effect));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_phenotype_quantitative_epistatic
+NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, IntegerMatrix epistatic_effect);
+RcppExport SEXP _PlantPopGenFIT_assign_phenotype_quantitative_epistatic(SEXP gtSEXP, SEXP locus_effectSEXP, SEXP dominance_effectSEXP, SEXP epistatic_effectSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locus_effect(locus_effectSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dominance_effect(dominance_effectSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type epistatic_effect(epistatic_effectSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_phenotype_quantitative_epistatic(gt, locus_effect, dominance_effect, epistatic_effect));
+    return rcpp_result_gen;
+END_RCPP
+}
+// assign_reproductive_intensity_phenotype
+NumericVector assign_reproductive_intensity_phenotype(IntegerMatrix demo, NumericVector phenotype_value, NumericVector phenotype_opt, double n_p, double n_k);
+RcppExport SEXP _PlantPopGenFIT_assign_reproductive_intensity_phenotype(SEXP demoSEXP, SEXP phenotype_valueSEXP, SEXP phenotype_optSEXP, SEXP n_pSEXP, SEXP n_kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type demo(demoSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type phenotype_value(phenotype_valueSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type phenotype_opt(phenotype_optSEXP);
+    Rcpp::traits::input_parameter< double >::type n_p(n_pSEXP);
+    Rcpp::traits::input_parameter< double >::type n_k(n_kSEXP);
+    rcpp_result_gen = Rcpp::wrap(assign_reproductive_intensity_phenotype(demo, phenotype_value, phenotype_opt, n_p, n_k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mutate_genotypes
+IntegerMatrix mutate_genotypes(IntegerMatrix gt, double mutation);
+RcppExport SEXP _PlantPopGenFIT_mutate_genotypes(SEXP gtSEXP, SEXP mutationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
+    Rcpp::traits::input_parameter< double >::type mutation(mutationSEXP);
+    rcpp_result_gen = Rcpp::wrap(mutate_genotypes(gt, mutation));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PlantPopGenFIT_simulation", (DL_FUNC) &_PlantPopGenFIT_simulation, 13},
-    {"_PlantPopGenFIT_rcpp_hello_world", (DL_FUNC) &_PlantPopGenFIT_rcpp_hello_world, 0},
+    {"_PlantPopGenFIT_simulation", (DL_FUNC) &_PlantPopGenFIT_simulation, 14},
+    {"_PlantPopGenFIT_assign_reproductive_intensity_random", (DL_FUNC) &_PlantPopGenFIT_assign_reproductive_intensity_random, 3},
+    {"_PlantPopGenFIT_assign_death_randomly_by_age_class", (DL_FUNC) &_PlantPopGenFIT_assign_death_randomly_by_age_class, 2},
+    {"_PlantPopGenFIT_sample_with_replacement_based_on_relative_weights", (DL_FUNC) &_PlantPopGenFIT_sample_with_replacement_based_on_relative_weights, 1},
+    {"_PlantPopGenFIT_recruit_to_carrying_capacity", (DL_FUNC) &_PlantPopGenFIT_recruit_to_carrying_capacity, 3},
+    {"_PlantPopGenFIT_assign_mothers_of_recruits", (DL_FUNC) &_PlantPopGenFIT_assign_mothers_of_recruits, 4},
+    {"_PlantPopGenFIT_assign_fathers_of_recruits", (DL_FUNC) &_PlantPopGenFIT_assign_fathers_of_recruits, 6},
+    {"_PlantPopGenFIT_assign_alleles_to_recruits", (DL_FUNC) &_PlantPopGenFIT_assign_alleles_to_recruits, 3},
+    {"_PlantPopGenFIT_row_bind_integer_matrices", (DL_FUNC) &_PlantPopGenFIT_row_bind_integer_matrices, 2},
+    {"_PlantPopGenFIT_update_demo", (DL_FUNC) &_PlantPopGenFIT_update_demo, 3},
+    {"_PlantPopGenFIT_update_gt", (DL_FUNC) &_PlantPopGenFIT_update_gt, 3},
+    {"_PlantPopGenFIT_assign_phenotype_quantitative", (DL_FUNC) &_PlantPopGenFIT_assign_phenotype_quantitative, 3},
+    {"_PlantPopGenFIT_assign_phenotype_quantitative_epistatic", (DL_FUNC) &_PlantPopGenFIT_assign_phenotype_quantitative_epistatic, 4},
+    {"_PlantPopGenFIT_assign_reproductive_intensity_phenotype", (DL_FUNC) &_PlantPopGenFIT_assign_reproductive_intensity_phenotype, 5},
+    {"_PlantPopGenFIT_mutate_genotypes", (DL_FUNC) &_PlantPopGenFIT_mutate_genotypes, 2},
     {NULL, NULL, 0}
 };
 

@@ -5,6 +5,7 @@ using namespace Rcpp;
 
 // determine reproductive (flowering) intensity
 // generate relative value of each at random
+// [[Rcpp::export]]
 NumericVector assign_reproductive_intensity_random (int num_ind, double mean, double sigma) {
    NumericVector ri = rnorm(num_ind, mean, sigma);
    return ri;
@@ -13,6 +14,7 @@ NumericVector assign_reproductive_intensity_random (int num_ind, double mean, do
 
 // identify individuals to die in this time step
 // rate of mortality depends on age class
+// [[Rcpp::export]]
 IntegerVector assign_death_randomly_by_age_class(NumericVector mortality, IntegerMatrix demo) {
 
    // determine index of mortality to be applied to 
@@ -46,6 +48,7 @@ IntegerVector assign_death_randomly_by_age_class(NumericVector mortality, Intege
 
 
 // sample with replacement based on relative weights 
+// [[Rcpp::export]]
 int sample_with_replacement_based_on_relative_weights (NumericVector weights) {
 
    int    n = weights.size();
@@ -74,6 +77,7 @@ int sample_with_replacement_based_on_relative_weights (NumericVector weights) {
 // determines the number of recruits needed for each population to
 // reach carrying capacity in the next step
 // Note: K can be different to population size at last step 
+// [[Rcpp::export]]
 IntegerMatrix recruit_to_carrying_capacity (IntegerMatrix demo, IntegerVector mortality_individuals, IntegerVector K) {
 
    int number_populations = K.size();
@@ -131,6 +135,7 @@ IntegerMatrix recruit_to_carrying_capacity (IntegerMatrix demo, IntegerVector mo
 
 // Assign mothers to new recruits
 // function of reproductuve intensity, dispersal
+// [[Rcpp::export]]
 IntegerVector assign_mothers_of_recruits (IntegerMatrix demo, IntegerMatrix recruit_demo, NumericVector reproductive_intensity, NumericMatrix dispersal) {
 
    int total_recruits = recruit_demo.nrow();
@@ -169,6 +174,7 @@ IntegerVector assign_mothers_of_recruits (IntegerMatrix demo, IntegerMatrix recr
 
 // Assign fathers to new recruits
 // function of reproductuve intensity, dispersal, mother, selfing
+// [[Rcpp::export]]
 IntegerVector assign_fathers_of_recruits (IntegerMatrix demo, IntegerMatrix recruit_demo, NumericVector reproductive_intensity, NumericMatrix dispersal, IntegerVector mother_index, double selfing) {
 
    int total_recruits = recruit_demo.nrow();
@@ -208,6 +214,7 @@ IntegerVector assign_fathers_of_recruits (IntegerMatrix demo, IntegerMatrix recr
 
 
 // assign alleles to new recruits, based on parent genotypes
+// [[Rcpp::export]]
 IntegerMatrix assign_alleles_to_recruits (IntegerMatrix gt, IntegerVector mother_index, IntegerVector father_index) {
 
    int number_recruits = mother_index.size();
@@ -267,6 +274,7 @@ IntegerMatrix assign_alleles_to_recruits (IntegerMatrix gt, IntegerVector mother
 }
 
 // rbind!
+// [[Rcpp::export]]
 IntegerMatrix row_bind_integer_matrices(IntegerMatrix a, IntegerMatrix b) {
 
    int a_nrow = a.nrow(); 
@@ -302,6 +310,7 @@ IntegerMatrix row_bind_integer_matrices(IntegerMatrix a, IntegerMatrix b) {
 
 
 // makes a demo table for t=t+1 using recruits and survivors from time t
+// [[Rcpp::export]]
 IntegerMatrix update_demo(IntegerMatrix demo, IntegerVector mortality_individuals, IntegerMatrix recruit_demo) {
 
    int number_previous  = mortality_individuals.size();
@@ -333,6 +342,7 @@ IntegerMatrix update_demo(IntegerMatrix demo, IntegerVector mortality_individual
 
 
 // makes a gt table for t=t+1 using recruits and survivors from time t
+// [[Rcpp::export]]
 IntegerMatrix update_gt(IntegerMatrix gt, IntegerVector  mortality_individuals, IntegerMatrix recruit_gt) {
 
    int number_previous  = mortality_individuals.size();
@@ -367,6 +377,7 @@ IntegerMatrix update_gt(IntegerMatrix gt, IntegerVector  mortality_individuals, 
 }
 
 // Phenotype values from genotypes, and locus and dominance effects
+// [[Rcpp::export]]
 NumericVector assign_phenotype_quantitative(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect) {
 
    int number_individuals = gt.nrow();
@@ -403,7 +414,75 @@ NumericVector assign_phenotype_quantitative(IntegerMatrix gt, NumericVector locu
    return p;
 }
 
+
+// Phenotype values from genotypes, and locus, dominance and epistatic effects
+// [[Rcpp::export]]
+NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, IntegerMatrix epistatic_effect) {
+
+   int number_individuals = gt.nrow();
+   int number_loci        = gt.ncol();
+   int number_epi         = epistatic_effect.nrow();   
+
+   NumericVector p(number_individuals);
+
+   for (int i=0; i<number_individuals; ++i) 
+   {
+
+      // get the additive effects in a vector, p_ij_vec
+      double p_i = 0.0;
+      NumericVector p_ij_vec(number_loci);
+
+      for (int j=0; j<number_loci; ++j) {
+
+         int gt_ij = gt(i,j);
+         double loc = locus_effect(j);
+         double dom = dominance_effect(j);
+
+         double p_ij = 0.0;
+
+         if (gt_ij == 2) {
+            p_ij = loc;
+         }
+
+         if (gt_ij == 1) {
+            p_ij = loc * dom;
+         }
+
+         p_ij_vec(j) = p_ij;
+      }
+
+      // modulate additive effects with epistatic effects
+
+      for (int k=0; k<number_epi; ++k) {
+
+         // modulated
+         int ind_med_locus  = epistatic_effect(k,0) -1 ;
+         // modulating
+         int ind_ming_locus = epistatic_effect(k,1) -1 ;
+
+         double dom = dominance_effect(ind_ming_locus);
+         int gt_ming_locus = gt(i, ind_ming_locus) ;
+
+         if (gt_ming_locus == 2) {
+            p_ij_vec(ind_med_locus) = 0;
+         }
+
+         if (gt_ij == 1) {
+            p_ij_vec(ind_med_locus) = P_ij_vec(ind_med_locus) * dom;
+         }
+
+      }
+
+      p(i) = sum(p_ij_vec);
+   }
+   
+   return p;
+}
+
+
+
 // assign reproductive intensity (RI) to individuals based on their phenotype, and a parameterized dependence of RI on phenotype
+// [[Rcpp::export]]
 NumericVector assign_reproductive_intensity_phenotype(IntegerMatrix demo, NumericVector phenotype_value, NumericVector phenotype_opt, double n_p, double n_k) {
 
    int number_individuals = phenotype_value.size();
@@ -423,6 +502,7 @@ NumericVector assign_reproductive_intensity_phenotype(IntegerMatrix demo, Numeri
 }
 
 // Mutate genotypes, looping over all
+// [[Rcpp::export]]
 IntegerMatrix mutate_genotypes(IntegerMatrix gt, double mutation) {
 
    int number_individuals = gt.nrow();
@@ -430,7 +510,7 @@ IntegerMatrix mutate_genotypes(IntegerMatrix gt, double mutation) {
 
    for (int i=0; i<number_individuals; ++i) 
    {
-      for (int j=0; j<number_individuals; ++j) 
+      for (int j=0; j<number_loci; ++j) 
       {
          int gt_ij = gt(i,j);
          double mrandval = R::runif(0,1);
@@ -467,6 +547,7 @@ IntegerMatrix mutate_genotypes(IntegerMatrix gt, double mutation) {
 /* 
 // Under development -- 
 // Mutate genotypes, estimate number by binomial, choose loci at random
+// [[Rcpp::export]]
 IntegerMatrix mutate_genotypes_fast(IntegerMatrix gt, double mutation) {
 
    int number_individuals = gt.nrow();

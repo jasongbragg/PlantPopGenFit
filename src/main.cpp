@@ -5,7 +5,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List simulation(int tsteps, NumericVector mortality, IntegerMatrix demo, IntegerMatrix gt, IntegerVector K, NumericMatrix dispersal, double selfing, NumericVector locus_effect, NumericVector dominance_effect, NumericVector phenotype_opt, double n_p, double n_k, double mutation) {
+List simulation(int tsteps, NumericVector mortality, IntegerMatrix demo, IntegerMatrix gt, IntegerVector K, NumericMatrix seed_dispersal, NumericMatrix pollen_dispersal, double selfing, NumericVector locus_effect, NumericVector dominance_effect, NumericVector phenotype_opt, double n_p, double n_k, double mutation) {
 
    int num_ind = demo.nrow();
    int num_loc = gt.ncol();
@@ -34,10 +34,10 @@ List simulation(int tsteps, NumericVector mortality, IntegerMatrix demo, Integer
       IntegerMatrix recruit_demo           = recruit_to_carrying_capacity(demo, mortality_individuals, K); 
 
       // Assign mothers of recruits 
-      IntegerVector mother_index           = assign_mothers_of_recruits(demo, recruit_demo, reproductive_intensity, dispersal);
+      IntegerVector mother_index           = assign_mothers_of_recruits(demo, recruit_demo, reproductive_intensity, seed_dispersal);
 
       // Assign fathers of recruits
-      IntegerVector father_index           = assign_fathers_of_recruits(demo, recruit_demo, reproductive_intensity, dispersal, mother_index, selfing);
+      IntegerVector father_index           = assign_fathers_of_recruits(demo, recruit_demo, reproductive_intensity, pollen_dispersal, mother_index, selfing);
 
       // Assign alleles to recruits from assigned parents   
       IntegerMatrix recruit_gt             = assign_alleles_to_recruits(gt, mother_index, father_index);
