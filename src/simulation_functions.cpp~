@@ -459,16 +459,18 @@ NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericV
          int ind_med_locus  = epistatic_effect(k,0) -1 ;
          // modulating
          int ind_ming_locus = epistatic_effect(k,1) -1 ;
+         // modval
+         int modval = epistatic_effect(k,2);
 
          double dom = dominance_effect(ind_ming_locus);
          int gt_ming_locus = gt(i, ind_ming_locus) ;
 
          if (gt_ming_locus == 2) {
-            p_ij_vec(ind_med_locus) = 0;
+            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + p_ij_vec(ind_med_locus) * modval;
          }
 
-         if (gt_ij == 1) {
-            p_ij_vec(ind_med_locus) = P_ij_vec(ind_med_locus) * dom;
+         if (gt_ming_locus == 1) {
+            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + p_ij_vec(ind_med_locus) * modval * dom;
          }
 
       }
