@@ -466,11 +466,11 @@ NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericV
          int gt_ming_locus = gt(i, ind_ming_locus) ;
 
          if (gt_ming_locus == 2) {
-            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + p_ij_vec(ind_med_locus) * modval;
+            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + modval;
          }
 
          if (gt_ming_locus == 1) {
-            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + p_ij_vec(ind_med_locus) * modval * dom;
+            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + modval * dom;
          }
 
       }
