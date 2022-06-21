@@ -417,7 +417,7 @@ NumericVector assign_phenotype_quantitative(IntegerMatrix gt, NumericVector locu
 
 // Phenotype values from genotypes, and locus, dominance and epistatic effects
 // [[Rcpp::export]]
-NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, IntegerMatrix epistatic_effect) {
+NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, NumericMatrix epistatic_effect) {
 
    int number_individuals = gt.nrow();
    int number_loci        = gt.ncol();

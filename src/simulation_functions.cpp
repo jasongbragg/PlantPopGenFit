@@ -417,7 +417,7 @@ NumericVector assign_phenotype_quantitative(IntegerMatrix gt, NumericVector locu
 
 // Phenotype values from genotypes, and locus, dominance and epistatic effects
 // [[Rcpp::export]]
-NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, IntegerMatrix epistatic_effect) {
+NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, NumericMatrix epistatic_effect) {
 
    int number_individuals = gt.nrow();
    int number_loci        = gt.ncol();
@@ -462,16 +462,31 @@ NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericV
          // modval
          int modval = epistatic_effect(k,2);
 
-         double dom = dominance_effect(ind_ming_locus);
+         double dom_med  = dominance_effect(ind_med_locus);
+         double dom_ming = dominance_effect(ind_ming_locus);
          int gt_ming_locus = gt(i, ind_ming_locus) ;
+         int gt_med_locus = gt(i, ind_med_locus) ;
+
+         double epi_med  = 0;
+         double epi_ming = 0;
+
+         if (gt_med_locus == 2) {
+            epi_med = 1;
+         }
+
+         if (gt_med_locus == 1) {
+            epi_med = dom_med;
+         }
 
          if (gt_ming_locus == 2) {
-            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + modval;
+            epi_ming = 1;
          }
 
          if (gt_ming_locus == 1) {
-            p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + modval * dom;
+            epi_ming = dom_med;
          }
+
+         p_ij_vec(ind_med_locus) = p_ij_vec(ind_med_locus) + epi_med * epi_ming * modval;
 
       }
 

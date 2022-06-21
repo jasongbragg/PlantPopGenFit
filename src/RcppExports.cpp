@@ -173,7 +173,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // assign_phenotype_quantitative_epistatic
-NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, IntegerMatrix epistatic_effect);
+NumericVector assign_phenotype_quantitative_epistatic(IntegerMatrix gt, NumericVector locus_effect, NumericVector dominance_effect, NumericMatrix epistatic_effect);
 RcppExport SEXP _PlantPopGenFIT_assign_phenotype_quantitative_epistatic(SEXP gtSEXP, SEXP locus_effectSEXP, SEXP dominance_effectSEXP, SEXP epistatic_effectSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -181,7 +181,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type gt(gtSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type locus_effect(locus_effectSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type dominance_effect(dominance_effectSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type epistatic_effect(epistatic_effectSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type epistatic_effect(epistatic_effectSEXP);
     rcpp_result_gen = Rcpp::wrap(assign_phenotype_quantitative_epistatic(gt, locus_effect, dominance_effect, epistatic_effect));
     return rcpp_result_gen;
 END_RCPP
